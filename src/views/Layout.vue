@@ -1,16 +1,37 @@
 <template>
-  <nav>顶部</nav>
-  <header>头部</header>
+  <AppTopnav />
+  <AppHeader />
+  <AppHeaderSticky />
   <main class="main">
     <router-view></router-view>
   </main>
-  <footer>底部</footer>
+  <AppFooter />
 </template>
 
 <script>
+import AppTopnav from '@/components/app-topnav.vue'
+import AppHeader from '@/components/app-header.vue'
+import AppHeaderSticky from '@/components/app-header-sticky.vue'
+import AppFooter from '@/components/app-footer.vue'
+import { useStore } from 'vuex'
 export default {
-  name: 'Layout'
+  name: 'Layout',
+  components: {
+    AppTopnav,
+    AppHeader,
+    AppFooter,
+    AppHeaderSticky
+  },
+  // 获取下分类数据
+  setup() {
+    const store = useStore()
+    store.dispatch('category/getList')
+  }
 }
 </script>
 
-<style></style>
+<style>
+.main {
+  height: 600px;
+}
+</style>

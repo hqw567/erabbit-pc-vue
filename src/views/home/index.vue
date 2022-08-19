@@ -1,9 +1,25 @@
-<template>首页</template>
+<template>
+  <div class="page-home">
+    <div class="home-entry">
+      <div class="container">
+        <!-- 左侧分类 -->
+        <HomeCategory />
+        <HomeBanner />
+      </div>
+    </div>
+  </div>
+</template>
 
 <script>
+import HomeCategory from './components/home-category.vue'
+import HomeBanner from './components/home-banner.vue'
 export default {
-  name: 'Home'
+  name: 'PageHome',
+  components: {
+    HomeCategory,
+    HomeBanner
+  }
 }
 </script>
 
-<style></style>
+<style scoped lang="less"></style>
