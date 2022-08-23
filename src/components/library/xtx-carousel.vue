@@ -1,5 +1,5 @@
 <template>
-  <div class="xtx-carousel" @mouseenter="clearSetInt" @mouseleave="timer">
+  <div class="xtx-carousel" @mouseenter="stop" @mouseleave="start">
     <ul class="carousel-body">
       <li
         class="carousel-item"
@@ -12,10 +12,10 @@
         </RouterLink>
       </li>
     </ul>
-    <a href="javascript:;" class="carousel-btn prev" @click="clickPrev"
+    <a href="javascript:;" class="carousel-btn prev" @click="toggled(-1)"
       ><i class="iconfont icon-angle-left"></i
     ></a>
-    <a href="javascript:;" class="carousel-btn next" @click="clickNext"
+    <a href="javascript:;" class="carousel-btn next" @click="toggled(1)"
       ><i class="iconfont icon-angle-right"></i
     ></a>
     <div class="carousel-indicator">
@@ -23,50 +23,79 @@
         v-for="(item, i) in sliders"
         :key="item.id"
         :class="{ active: i === index }"
-        @click="clickIndicator(i)"
+        @click="index = i"
       ></span>
     </div>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
+import { onUnmounted, ref, watch } from 'vue'
 export default {
   name: 'XtxCarousel',
   props: {
     sliders: {
       type: Array,
       default: () => []
+    },
+    duration: {
+      type: Number,
+      default: 3000
+    },
+    autoPlay: {
+      type: Boolean,
+      default: false
     }
   },
-  setup() {
+  setup(props) {
     const index = ref(0)
+    // 自动播放
+    let timer = null
+    const autoPlayFn = () => {
+      clearInterval(timer)
+      timer = setInterval(() => {
+        index.value++
+        if (index.value >= props.sliders.length) {
+          index.value = 0
+        }
+      }, props.duration)
+    }
+    watch(
+      () => props.sliders,
+      (newVal) => {
+        if (newVal.length && props.autoPlay) {
+          index.value = 0
+          autoPlayFn()
+        }
+      },
+      { immediate: true }
+    )
 
-    const clickNext = () => {
-      if (index.value === 4) index.value = 0
-      else index.value++
+    // 鼠标进入停止,移出开启，前提条件：autoPlay
+    const stop = () => {
+      if (timer) clearInterval(timer)
     }
-    const clickPrev = () => {
-      if (index.value === 0) index.value = 4
-      else index.value--
+    const start = () => {
+      if (props.sliders.length && props.autoPlay) {
+        autoPlayFn()
+      }
     }
-    let intervalId
-    const timer = () => {
-      intervalId = setInterval(() => {
-        clickNext()
-      }, 1000)
+    const toggled = (step) => {
+      const newIndex = index.value + step
+      if (newIndex >= props.sliders.length) {
+        index.value = 0
+        return
+      }
+      if (newIndex < 0) {
+        index.value = props.sliders.length - 1
+        return
+      }
+      index.value = newIndex
     }
-
-    const clearSetInt = () => {
-      clearInterval(intervalId)
-    }
-    onMounted(() => {
-      timer()
+    onUnmounted(() => {
+      clearInterval(timer)
     })
-    const clickIndicator = (i) => {
-      index.value = i
-    }
-    return { index, clickPrev, clickNext, timer, clearSetInt, clickIndicator }
+    return { index, stop, start, toggled }
   }
 }
 </script>

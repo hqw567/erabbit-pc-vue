@@ -1,10 +1,18 @@
 <template>
-  <div class="sub-category">sub:{{ $route.params.id }}</div>
+  <div class="sub-category">
+    <div class="container">
+      <SubBread />
+    </div>
+  </div>
 </template>
 
 <script>
+import SubBread from './components/sub-bread.vue'
 export default {
-  name: 'SubCategory'
+  name: 'SubCategory',
+  components: {
+    SubBread
+  }
 }
 </script>
 

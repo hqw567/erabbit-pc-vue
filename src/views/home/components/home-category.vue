@@ -104,7 +104,6 @@ export default {
     const currCategory = computed(() => {
       return menuList.value.find((item) => item.id === categoryId.value)
     })
-    console.log(currCategory)
     return { menuList, categoryId, currCategory }
   }
 }
